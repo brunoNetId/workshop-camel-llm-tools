@@ -1,0 +1,35 @@
+- name: Evaluate Shared Database namespace if not exists
+  k8s:
+    api_version: v1
+    kind: Namespace
+    name: shared
+    state: present
+
+- name: Provision Shared Database
+  k8s:
+    state: present
+    resource_definition: "{{ lookup('template', 'shared-database.yaml.j2') }}"
+
+- name: "Wait until Database Deployment is active"
+  k8s_info:
+    api_version: apps.openshift.io/v1
+    kind: DeploymentConfig
+    namespace: shared
+    name: postgresql
+  register: db
+  retries: 30
+  delay: 10
+  until:
+   - db.resources[0].status.readyReplicas is defined
+   - db.resources[0].status.readyReplicas == 1
+
+- name: Deploy SQL script
+  shell: 
+    cmd: >
+      oc exec svc/postgresql -n shared -- curl https://raw.githubusercontent.com/brunoNetId/workshop-camel-llm-tools/refs/heads/main/deploy/create.sql -o /tmp/create.sql
+
+- name: Deploy SQL script
+  shell: 
+    cmd: >
+      oc exec svc/postgresql -n shared -- psql -f /tmp/create.sql
+

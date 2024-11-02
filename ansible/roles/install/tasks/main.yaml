@@ -8,6 +8,10 @@
   set_fact:
     num_users: "{{ num_users | b64decode | regex_findall('user') | length }}"
 
+- name: Retrieve Number of Users 2/2
+  set_fact:
+    num_users: "1"
+
 - name: debug
   debug:
     msg: "Number of users: {{ num_users }}"

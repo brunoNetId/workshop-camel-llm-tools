@@ -116,7 +116,7 @@ First of all, see by yourself the data that is available in the database by runn
 
 [source, subs=]
 ----
-oc exec svc/postgresql -- psql -d demo -c 'select * from transactions'<br>
+oc exec -n shared svc/postgresql -- psql -d demo -c 'select * from transactions'<br>
 ----
 
 NOTE: The command above is connecting to the database service and running an SQL command to retrieve all the rows in the table.
@@ -175,7 +175,7 @@ Open the file in text mode and copy/paste the following YAML content:
         databaseName: demo
         password: camel
         portNumber: "5432"
-        serverName: postgresql
+        serverName: postgresql.shared.svc
         user: camel
       type: org.postgresql.ds.PGSimpleDataSource
 - route:
@@ -372,7 +372,7 @@ The code snippet below shows you the full YAML definition used for the diagram a
         databaseName: demo
         password: camel
         portNumber: "5432"
-        serverName: postgresql
+        serverName: postgresql.shared.svc
         user: camel
       type: org.postgresql.ds.PGSimpleDataSource
 - route:

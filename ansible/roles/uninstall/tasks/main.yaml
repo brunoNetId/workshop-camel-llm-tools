@@ -8,38 +8,18 @@
   set_fact:
     num_users: "{{ num_users | b64decode | regex_findall('user') | length }}"
 
-
-
-            # - name: Uninstall Service Interconnect operator
-            #   include_tasks: remove_service_interconnect.yaml
-            #   vars:
-            #     operators_project: "openshift-operators"
-
-            # - name: Uninstall AMQ Streams operator
-            #   include_tasks: remove_streams.yaml
-            #   vars:
-            #     operators_project: "workshop-operators"
-
-            # - name: Uninstall AMQ Broker operator
-            #   include_tasks: remove_amq.yaml
-            #   vars:
-            #     operators_project: "openshift-operators"
-
-            # - name: Uninstall AMQ Camel-K operator
-            #   include_tasks: remove_camelk.yaml
-            #   vars:
-            #     operators_project: "workshop-operators"
-
+- name: Retrieve Number of Users 2/2
+  set_fact:
+    num_users: "1"
 
 - name: Remove User Workspaces
   include_tasks: remove_user_devworkspaces.yaml
 
-
-- name: Uninstall DevSpaces
-  include_tasks: remove_devspaces.yaml
-  vars:
-    operators_project: 'workshop-operators'
-    che_project: "che"
+# - name: Uninstall DevSpaces
+#   include_tasks: remove_devspaces.yaml
+#   vars:
+#     operators_project: 'workshop-operators'
+#     che_project: "che"
 
 - name: Delete namespace userX-devspaces
   k8s:
@@ -48,6 +28,11 @@
     kind: Namespace
     name: 'user{{item}}-devspaces'
   with_sequence: start=1 end={{ num_users }}
+
+- name: Remove Shared Resources
+  include_tasks: remove_shared_database.yaml
+
+
 
 
 
